@@ -33,7 +33,7 @@ floating_modifier $mod
 
 # start a terminal
 #bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec st
+bindsym $mod+Return exec /usr/bin/kitty
 
 # scrot
 bindsym --release $mod+s exec "scrot -s"
@@ -159,13 +159,26 @@ bindsym $mod+r mode "resize"
 bar {
         status_command i3status
 }
+#amcr configs
+exec --no-startup-id volumeicon
+# bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
+# bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
+# bindsym XF86AudioMute exec --no-startup-id set-sink-mute @DEFAULT_SINK@ toggle
+bindsym $mod+n exec --no-startup-id ~/.config/notebook/run_notebook.sh
+exec --no-startup-id picom --experimental-backends --backend glx --vsync > /dev/null 2>&1
+# --no-use-damage --xrender-sync-fence 
 
 bindsym Mod1+F1 exec "~/bin/hhkb-i3"
 bindsym $mod+Shift+h exec "~/.screenlayout/home-setup.sh"
-bindsym $mod+Shift+p exec "~/.screenlayout/portable-setup.sh"
+#bindsym $mod+Shift+p exec "~/.screenlayout/portable-setup.sh"
 bindsym $mod+Shift+w exec "~/bin/map-wacom"
 bindsym $mod+b exec "boomer"
 bindsym --release $mod+Shift+l exec "slock"
+# Captura pantalla completa
+bindsym Print exec scrot ~/Pictures/screenshot_%Y-%m-%d-%H%M%S.png
+# Captura una región con selección manual
+#bindsym $mod+Shift+s exec scrot -s ~/Pictures/screenshot_%Y-%m-%d-%H%M%S.png
+bindsym $mod+Shift+s exec flameshot gui
 
 focus_follows_mouse no
 
