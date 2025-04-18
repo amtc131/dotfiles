@@ -1,6 +1,6 @@
 [user]
-	email = reximkut@gmail.com
-	name = rexim
+	email = amtc131@gmail.com
+	name = amtc131
 [merge]
 	conflictStyle = diff3
 [magit]
@@ -9,3 +9,5 @@
     tree = log --graph --decorate --pretty=oneline --abbrev-commit --all
 [init]
 	defaultBranch = main
+[credential]
+	helper = store
