@@ -1,0 +1,7 @@
+#!/sbin/openrc-run
+
+name="DisplayLinkManager"
+command="/opt/displaylink/DisplayLinkManager"
+pidfile="/run/displaylink.pid"
+command_background=true
+description="DisplayLink USB graphics driver"
