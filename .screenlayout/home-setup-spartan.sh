@@ -5,9 +5,6 @@
 
 #xrandr --output DVI-I-1-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DVI-I-2-2 --mode 2560x1440 --pos 1920x0 --rotate normal
 
-LOG_DIR="$HOME/.logs"
-LOG_FILE="$LOG_DIR/xrandr-setup.log"
-
 declare -A modes
 declare -A widths
 declare -A heights
@@ -25,7 +22,6 @@ log_msg() {
     }
     {
         lvl = $1
-        # El mensaje son todos los campos desde $2 en adelante
         msg = ""
         for (i=2; i<=NF; i++) {
             msg = msg $i (i==NF ? "" : " ")
@@ -43,6 +39,11 @@ log_msg() {
 }
 
 read -a outputs_allow <<< "${MONITORES_VALIDOS}"
+
+if [ ${#outputs_allow[@]} -eq 0 ]; then
+    log_msg "ERROR" "No se detecto configuraciòn de salidas."
+    exit 1
+fi
 
 is_monitor_allowed() {
     local name="$1"
@@ -112,3 +113,4 @@ for output in "${outputs[@]}"; do
 done
 
 log_msg "INFO" "cmd: $cmd"
+eval ${cmd}
