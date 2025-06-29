@@ -1,0 +1,18 @@
+# Monitor Layout Manifest
+# Formato:
+# output=<nombre_salida>
+# mode=<ancho>x<alto>
+# primary=true|false
+# position=left|right
+
+[monitor1]
+output=DVI-I-1-1
+mode=1920x1080
+primary=true
+position=left
+
+[monitor2]
+output=DVI-I-2-2
+mode=2560x1440
+primary=true
+position=right
