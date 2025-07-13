@@ -8,6 +8,8 @@
 declare -A modes
 declare -A widths
 declare -A heights
+debug_level="${DEBUG_LEVEL:-1}"
+cmd="xrandr"
 
 log_msg() {
     local level="$1"
@@ -20,7 +22,7 @@ log_msg() {
         return
     fi
 
-    echo -e "${level}\t${message}" | awk -v debug_level=0 -v log_file="$log_file" '
+    echo -e "${level}\t${message}" | awk -v debug_level="'$debug_level'" -v log_file="$log_file" '
     BEGIN {s
         levels["ERROR"]=3; levels["WARN"]=2; levels["INFO"]=1; levels["DEBUG"]=0;
         current_level = debug_level;
@@ -43,11 +45,10 @@ log_msg() {
     '
 }
 
-log_msg "DEBUG" "variable ${MONITORES_VALIDOS}"
-
+log_msg "DEBUG" "variable MONITORES_VALIDOS= ${MONITORES_VALIDOS}"
 read -a outputs_allow <<< "${MONITORES_VALIDOS}"
 
-log_msg "DEBUG" "outputs_allow ${outputs_allow[*]}"
+log_msg "DEBUG" "outputs_allow: ${outputs_allow[*]}"
 
 if [ ${#outputs_allow[@]} -eq 0 ]; then
     log_msg "ERROR" "No se detectó configuración de salidas permitidas."
@@ -57,7 +58,7 @@ fi
 is_monitor_allowed() {
     local name="$1"
     for valid in "${outputs_allow[@]}"; do
-        log_msg "DEBUG" "Valid ${valid}"
+        #log_msg "DEBUG" "Valid ${valid}"
         if [[ "$name" == "$valid" ]]; then
             return 0
         fi
@@ -78,15 +79,14 @@ for output in "${all_outputs[@]}"; do
         outputs+=("$output")
     else
         log_msg "INFO" "Ignorando salida no permitida: [$output]"
+        cmd+=" --output $output --off"
     fi
 done
 
 if [ ${#outputs[@]} -eq 0 ]; then
-    log_msg "ERROR" "No se detecto configuraciòn de salidas."
+    log_msg "ERROR" "No se detectaron salidas válidas conectadas.."
     exit 1
 fi
-
-default_mode="1920x1080"
 
 for output in "${outputs[@]}"; do
    mode_line=$(xrandr | grep "^${output} connected" -A20 | grep '\*' | head -n1)
@@ -116,18 +116,14 @@ for output in "${outputs[@]}"; do
    fi
 done
 
-
 sorted_outputs=($(for out in "${outputs[@]}"; do
                       echo "$out ${widths[$out]}"
                 done | sort -nk2 | awk '{print $1}'))
 
-
 primary_output="${sorted_outputs[-1]}"
-
 log_msg "DEBUG" "primary outputs ${primary_output}"
 
 posx=0
-cmd="xrandr"
 for output in "${sorted_outputs[@]}"; do
     mode="${modes[$output]}"
     if [[ -z "$mode" ]]; then
@@ -135,11 +131,13 @@ for output in "${sorted_outputs[@]}"; do
         continue
     fi
 
-    if [[ $output == "$primary_output" ]]; then
-        cmd+=" --output $output --primary --mode $mode --pos ${posx}x0 --rotate normal"
-    else
-        cmd+=" --output $output --mode $mode --pos ${posx}x0 --rotate normal"
-    fi
+     args="--output $output --mode $mode --pos ${posx}x0 --rotate normal"
+    [[ $output == "$primary_output" ]] && args+=" --primary"
+       #cmd+=" --output $output --primary --mode $mode --pos ${posx}x0 --rotate normal"
+    cmd+=" $args"
+    #else
+        #cmd+=" --output $output --mode $mode --pos ${posx}x0 --rotate normal"
+    #fi
 
     posx=$((posx + widths[$output]))
 done

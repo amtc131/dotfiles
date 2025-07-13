@@ -16,3 +16,6 @@ output=DVI-I-2-2
 mode=2560x1440
 primary=true
 position=right
+
+[disabled]
+outputs=HDMI-2

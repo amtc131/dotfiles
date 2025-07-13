@@ -158,6 +158,7 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
         status_command i3status
+        position top
 }
 #amcr configs
 exec --no-startup-id volumeicon
@@ -180,9 +181,13 @@ bindsym --release $mod+Shift+l exec "slock"
 bindsym Print exec scrot ~/Pictures/screenshot_%Y-%m-%d-%H%M%S.png
 # Captura una región con selección manual
 #bindsym $mod+Shift+s exec scrot -s ~/Pictures/screenshot_%Y-%m-%d-%H%M%S.png
-bindsym $mod+Shift+s exec flameshot gui
+# bindsym $mod+Shift+s exec flameshot gui
+bindsym $mod+Shift+s exec --no-startup-id /home/alex/.config/dotfiles/flameshot_clip.sh
 
 focus_follows_mouse no
 
 hide_edge_borders both
 
+exec --no-startup-id dunst
+
+bindsym $mod+t exec thunar
