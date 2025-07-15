@@ -191,3 +191,5 @@ hide_edge_borders both
 exec --no-startup-id dunst
 
 bindsym $mod+t exec thunar
+
+bindsym $mod+c exec --no-startup-id env PULSE_SOURCE=alsa_input.usb-DCMT_Technology_USB_Condenser_Microphone_214b206000000178-00.mono-fallback PULSE_SINK=alsa_output.usb-DisplayLink_Dell_D3100_USB3.0_Dock_2311304382-02.analog-stereo google-chrome-stable --use-fake-ui-for-media-stream --ozone-platform=x11
