@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PPC=/usr/bin/powerprofilesctl
+
+if [ ! -x "$PPC" ]; then
+  echo "⚡ N/A"
+  echo "N/A"
+  echo "#f38ba8"
+  exit 0
+fi
+
+current="$("$PPC" get 2>/dev/null || echo unknown)"
+
+case "$current" in
+  performance) icon=""; color="#f38ba8" ;;  # o "PERF"
+  balanced)    icon=""; color="#cdd6f4" ;;  # o "BAL"
+  power-saver) icon=""; color="#a6e3a1" ;;  # o "SAVE"
+  *)           icon="⚡"; color="#cdd6f4" ;;
+esac
+
+echo "$icon $current"
+echo "$current"
+echo "$color"
+
+case "${BLOCK_BUTTON:-}" in
+  1) # Clic izq: ciclo
+     next="balanced"
+     case "$current" in
+       performance) next="balanced" ;;
+       balanced)    next="power-saver" ;;
+       power-saver) next="performance" ;;
+       *)           next="balanced" ;;
+     esac
+     "$PPC" set "$next" >/dev/null 2>&1 &
+     ;;
+  3) # Clic der: menú rápido por rofi/zenity (opcional)
+     if command -v rofi >/dev/null 2>&1; then
+       choice="$(printf "performance\nbalanced\npower-saver\n" | rofi -dmenu -i -p 'Power Profile:')"
+       [ -n "$choice" ] && "$PPC" set "$choice" >/dev/null 2>&1 &
+     elif command -v zenity >/dev/null 2>&1; then
+       choice="$(zenity --list --title="Power Profile" --column="Profile" performance balanced power-saver || true)"
+       [ -n "$choice" ] && "$PPC" set "$choice" >/dev/null 2>&1 &
+     fi
+     ;;
+esac

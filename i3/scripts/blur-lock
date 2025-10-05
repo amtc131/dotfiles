@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ICON_LOCK="" 
+ICON_OPEN=""
+
+if pgrep -x i3lock >/dev/null 2>&1; then
+  icon="$ICON_LOCK"
+  color="#a6e3a1"  
+  state="locked"
+else
+  icon="$ICON_OPEN"
+  color="#cdd6f4"  
+  state="unlocked"
+fi
+
+time_now="$(date +'%H:%M')"
+
+echo "$icon $time_now"
+echo "$time_now"
+echo "$color"
+
+case "${BLOCK_BUTTON:-}" in
+  1)  # Clic izq: Lock con blur (scrot + ImageMagick)
+      tmp="$(mktemp --suffix=.png)"
+
+      rm -f "$tmp"
+      if command -v scrot >/dev/null 2>&1; then
+          scrot -z -o "$tmp"
+      elif command -v grim >/dev/null 2>&1; then
+          grim "$tmp"
+      else
+          notify-send "lock" "Instala scrot (Xorg) o grim (Wayland)"
+          exit 1
+      fi
+
+      if command -v convert >/dev/null 2>&1; then
+          convert "$tmp" -blur 5x4 "$tmp"
+      fi
+
+      if command -v i3lock-color >/dev/null 2>&1; then
+          ( i3lock-color -i "$tmp"; rm -f "$tmp" ) &
+      else
+          ( i3lock -i "$tmp"; rm -f "$tmp" ) &
+      fi
+
+      ;;
+  2)  # Clic medio: Lock rápido (sin blur)
+      i3lock -c 000000 &   # fondo negro
+      ;;
+  3)  # Clic derecho: suspender + lock
+      # Bloquea y, tras un pequeño delay, suspende
+      ( i3lock -c 000000 & sleep 0.5; systemctl suspend ) &
+      ;;
+esac

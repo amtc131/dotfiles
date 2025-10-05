@@ -163,7 +163,7 @@
 (setq dired-mouse-drag-files t)
 
 ;;; helm
-(rc/require 'helm 'helm-git-grep 'helm-ls-git)
+;;; (rc/require 'helm 'helm-git-grep 'helm-ls-git)
 
 (setq helm-ff-transformer-show-only-basename nil)
 
